@@ -3,11 +3,13 @@ require("dotenv").config();
 const { dbConnection } = require("./config/db");
 const route = require("./routes/authRoutes");
 const { errorMiddleware } = require("./middlewares/errorMiddlewares");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 app.use("/api/auth", route);
 

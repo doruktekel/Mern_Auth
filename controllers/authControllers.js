@@ -7,7 +7,7 @@ const register = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) {
     res.status(400);
-    throw new Error("Pelase fill the all credentials");
+    throw new Error("Please fill the all credentials");
   }
 
   const alreadyUser = await UserModel.findOne({ email });
@@ -25,7 +25,7 @@ const register = asyncHandler(async (req, res, next) => {
     password: hashedPassword,
   });
 
-  res.status(201).json({ message: "Registeration is successfully" });
+  res.status(201).json({ message: "Registration is successfully" });
 });
 
 const login = asyncHandler(async (req, res, next) => {
@@ -42,10 +42,21 @@ const login = asyncHandler(async (req, res, next) => {
 
   if (!checkPassword) {
     res.status(500);
-    throw new Error("Credintials are wrong");
+    throw new Error("Credentials are wrong");
   }
+
   const token = generateToken(alreadyUser._id);
-  res.status(200).json({ message: "Login was successfully", token });
+
+  res.cookie(alreadyUser._id, token, {
+    path: "/",
+    expires: new Date(Date.now() + 1000 * 30),
+    httpOnly: true,
+    sameSite: "lax",
+  });
+
+  res
+    .status(200)
+    .json({ message: "Login was successfully", user: alreadyUser, token });
 });
 
 const getUser = asyncHandler(async (req, res, next) => {
@@ -59,7 +70,7 @@ const getUser = asyncHandler(async (req, res, next) => {
 });
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "1hr" });
+  return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "10s" });
 };
 
 module.exports = {

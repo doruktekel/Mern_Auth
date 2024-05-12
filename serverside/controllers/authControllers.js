@@ -47,6 +47,15 @@ const login = asyncHandler(async (req, res, next) => {
 
   const token = generateToken(alreadyUser._id);
 
+  console.log("Generated Token\n", token);
+  // if (req.cookies[`${alreadyUser._id}`]) {
+  //   req.cookies[`${alreadyUser._id}`] = "";
+  // }
+
+  if (req.cookies[alreadyUser._id]) {
+    res.clearCookie(alreadyUser._id);
+  }
+
   res.cookie(alreadyUser._id, token, {
     path: "/",
     expires: new Date(Date.now() + 1000 * 30),
@@ -70,11 +79,12 @@ const getUser = asyncHandler(async (req, res, next) => {
 });
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "10s" });
+  return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: "35s" });
 };
 
 module.exports = {
   register,
   login,
   getUser,
+  generateToken,
 };

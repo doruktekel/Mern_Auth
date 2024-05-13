@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { authActions } from "../store";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -22,6 +25,7 @@ const Login = () => {
         password: formData.password,
       });
       const resData = await res.data;
+      dispatch(authActions.login());
       navigate("/user");
     } catch (error) {
       console.log("Error", error);
